@@ -1,14 +1,26 @@
 using UnityEngine;
 
-public class MovementActorSimple : MovementActor
+public class MovementActorSimple : MovementActor.Using<ControllerColliderHit>
 {
     [SerializeField] private float speedMovement = 5f;
     [SerializeField] private float speedRotation = 4f;
     [SerializeField] private Transform target;
 
-    protected override void UpdateDirection()
+    protected Vector3 direction;
+    protected Quaternion rotation;
+
+    public override void Move(MovementAgent.Using<ControllerColliderHit> agent)
     {
-        if (target.hasChanged) // não atualiza se o target ficar parado!
+        UpdateDirection();
+        UpdateRotation();
+
+        agent.Move(direction);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * speedRotation);
+    }
+
+    protected virtual void UpdateDirection()
+    {
+        // if (target.hasChanged) // não atualiza se o target ficar parado!
         {
             direction = target.position - transform.position;
             direction = direction.normalized * speedMovement;
@@ -16,9 +28,8 @@ public class MovementActorSimple : MovementActor
         }
     }
 
-    protected override void UpdateRotation()
+    protected virtual void UpdateRotation()
     {
-        Quaternion rotation = Quaternion.LookRotation(direction);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * speedRotation);
+        rotation = Quaternion.LookRotation(direction);
     }
 }
