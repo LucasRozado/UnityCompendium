@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MovementControllerCharacter : MovementController
+public class CharacterMovementController : MovementController
 {
     private MovementActor.Using<ControllerColliderHit> actor;
     private MovementAgent.Using<ControllerColliderHit> agent;
@@ -10,7 +10,7 @@ public class MovementControllerCharacter : MovementController
         base.Awake();
 
         actor = GetComponent<MovementActor.Using<ControllerColliderHit>>();
-        agent = GetAgent<MovementAgentCharacter>();
+        agent = GetAgent<CharacterMovementAgent>();
     }
 
     private void Update()

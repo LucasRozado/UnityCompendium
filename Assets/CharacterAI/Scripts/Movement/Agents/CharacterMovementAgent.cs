@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class MovementAgentCharacter : MovementAgent.Using<ControllerColliderHit>
+public class CharacterMovementAgent : MovementAgent.Using<ControllerColliderHit>
 {
     private CharacterController characterController;
     private void Awake()

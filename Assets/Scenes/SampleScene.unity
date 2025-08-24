@@ -471,12 +471,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 627446362}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cb61d226796b9043be576922e881821, type: 3}
+  m_Script: {fileID: 11500000, guid: 4f270144b1e6df743a4811ea67186977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   maximumSpeed: 5
-  maximumForce: 3
+  maximumAcceleration: 0.1
   mass: 1
+  arrivalRadius: 5
   target: {fileID: 2101487814}
 --- !u!1 &832575517
 GameObject:

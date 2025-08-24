@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MovementActorSimple : MovementActor.Using<ControllerColliderHit>
+public class SimpleMovementActor : MovementActor.Using<ControllerColliderHit>
 {
     [SerializeField] private float speedMovement = 5f;
     [SerializeField] private float speedRotation = 4f;
