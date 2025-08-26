@@ -2,19 +2,12 @@ using UnityEngine;
 
 public class CharacterMovementController : MovementController
 {
-    private MovementActor.Using<ControllerColliderHit> actor;
-    private MovementAgent.Using<ControllerColliderHit> agent;
-
-    private new void Awake()
-    {
-        base.Awake();
-
-        actor = GetComponent<MovementActor.Using<ControllerColliderHit>>();
-        agent = GetAgent<CharacterMovementAgent>();
-    }
-
     private void Update()
     {
-        actor.Move(agent);
+        Subject.UpdateVelocity(Agent);
+        Subject.Move(Time.deltaTime);
+
+        if (Subject.Velocity != Vector3.zero)
+        { transform.rotation = Quaternion.LookRotation(Subject.Velocity); }
     }
 }

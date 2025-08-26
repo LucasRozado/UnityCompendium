@@ -1,18 +1,17 @@
 using UnityEngine;
 
-public class ArriveMovementActor : MovementActor.Using<ControllerColliderHit>
+public class ArriveMovementAgent : MovementAgent
 {
     [SerializeField] private float maximumSpeed = 5f;
     [SerializeField] private float maximumAcceleration = .1f;
-    [SerializeField] private float mass = 1f;
     [SerializeField] private float arrivalRadius = 5f;
 
     [SerializeField] private Transform target;
 
-    private Vector3 velocity = Vector3.zero;
-
-    public override void Move(MovementAgent.Using<ControllerColliderHit> agent)
+    public override Vector3 GetNextVelocity(MovementSubject subject)
     {
+        Vector3 velocity = subject.Velocity;
+
         Vector3 targetOffset = target.position - transform.position;
         float targetDistance = targetOffset.magnitude;
         float rampedSpeed = maximumSpeed * (targetDistance / arrivalRadius);
@@ -22,11 +21,10 @@ public class ArriveMovementActor : MovementActor.Using<ControllerColliderHit>
         Vector3 steerVelocity = desiredVelocity - velocity;
         steerVelocity = Vector3.ClampMagnitude(steerVelocity, maximumAcceleration);
 
-        Vector3 acceleration = steerVelocity / mass;
+        Vector3 acceleration = steerVelocity / subject.Mass;
         velocity += acceleration;
         velocity = Vector3.ClampMagnitude(velocity, maximumSpeed);
 
-        agent.Move(velocity);
-        transform.rotation = Quaternion.LookRotation(velocity);
+        return velocity;
     }
 }
