@@ -27,7 +27,7 @@ public class CharacterMovementSubject : MovementSubject.Collider<ControllerColli
         if (collisionFlags != CollisionFlags.None)
         { colliderHit = null; }
 
-        bool hasUpdatedCollider = lastColliderHit.collider != colliderHit.collider;
+        bool hasUpdatedCollider = lastColliderHit?.collider != colliderHit?.collider;
         if (onCollisionUpdate != null)
         {
             bool hasUpdatedFlags = lastCollisionFlags != collisionFlags;

@@ -14,32 +14,93 @@ public abstract class MovementController : MonoBehaviour
 
     public MovementAgent Agent => agents.Active;
     public MovementSubject Subject => subjects.Active;
+}
 
-    class ComponentSwitch<T> where T : MonoBehaviour
+
+public class SwitchableBehaviour : MonoBehaviour
+{
+    public delegate void Signal(SwitchableBehaviour self);
+
+    public Signal RunOnEnable { get; set; }
+    protected void OnEnable()
+    { RunOnEnable?.Invoke(this); }
+
+    public Signal RunOnDisable { get; set; }
+    protected void OnDisable()
+    { RunOnDisable?.Invoke(this); }
+}
+
+public class ComponentSwitch<T> where T : SwitchableBehaviour
+{
+    private readonly Dictionary<System.Type, T> components = new();
+
+    private T active;
+    private bool isSwitching;
+
+    public void Initialize(GameObject gameObject)
     {
-        private readonly Dictionary<System.Type, T> components = new();
-
-        private T active;
-
-        public void Initialize(GameObject gameObject)
+        T[] components = gameObject.GetComponents<T>();
+        foreach (T component in components)
         {
-            T[] components = gameObject.GetComponents<T>();
-            foreach (T component in components)
-            {
-                this.components[component.GetType()] = component;
+            if (active == null && component.enabled)
+            { active = component; }
 
-                if (active == null && component.enabled)
-                { active = component; }
-                else
-                { component.enabled = false; }
-            }
-            if (active == null)
-            { active = components?[0]; }
+            component.enabled = false;
+            component.RunOnEnable += OnComponentEnable;
+            this.components[component.GetType()] = component;
         }
+        if (active == null)
+        { active = components?[0]; }
 
-        public T Active => active;
+        active.enabled = true;
+    }
 
-        protected Component Get<Component>() where Component : T
-        { return components[typeof(Component)] as Component; }
+    public T Active => active;
+
+
+    public void Switch<Component>() where Component : T
+    { Switch(Get<Component>()); }
+    private void Switch(T component)
+    {
+        if (isSwitching) return;
+
+        isSwitching = true;
+
+        active.enabled = false;
+        active = component;
+        active.enabled = true;
+
+        isSwitching = false;
+    }
+    public void Deactivate()
+    { Switch(null); }
+
+    protected Component Get<Component>() where Component : T
+    { return components[typeof(Component)] as Component; }
+
+
+    private void OnComponentEnable(SwitchableBehaviour component)
+    {
+        if (active == null)
+        { Activate(component as T); }
+        else
+        { Switch(component as T); }
+    }
+    private void OnActiveDisable(SwitchableBehaviour active)
+    {
+        Deactivate(active as T);
+    }
+
+    private void Activate(T component)
+    {
+        component.RunOnEnable += OnComponentEnable;
+        component.RunOnDisable -= OnActiveDisable;
+        active = component;
+    }
+    private void Deactivate(T component)
+    {
+        component.RunOnEnable -= OnComponentEnable;
+        component.RunOnDisable += OnActiveDisable;
+        active = null;
     }
 }
