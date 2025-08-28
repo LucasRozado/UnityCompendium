@@ -3,12 +3,12 @@ using UnityEngine;
 public class ArriveMovementAgent : MovementAgent
 {
     [SerializeField] private float maximumSpeed = 5f;
-    [SerializeField] private float maximumAcceleration = .1f;
+    [SerializeField] private float maximumAcceleration = 5f;
     [SerializeField] private float arrivalRadius = 5f;
 
     [SerializeField] private Transform target;
 
-    public override Vector3 GetNextVelocity(MovementSubject subject)
+    public override Vector3 GetNextVelocity(MovementSubject subject, float deltaTime)
     {
         Vector3 velocity = subject.Velocity;
 
@@ -19,7 +19,7 @@ public class ArriveMovementAgent : MovementAgent
         Vector3 desiredVelocity = (clippedSpeed / targetDistance) * targetOffset;
 
         Vector3 steerVelocity = desiredVelocity - velocity;
-        steerVelocity = Vector3.ClampMagnitude(steerVelocity, maximumAcceleration);
+        steerVelocity = Vector3.ClampMagnitude(steerVelocity, maximumAcceleration * deltaTime);
 
         Vector3 acceleration = steerVelocity / subject.Mass;
         velocity += acceleration;

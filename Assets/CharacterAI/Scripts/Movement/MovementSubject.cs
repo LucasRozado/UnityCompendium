@@ -7,9 +7,9 @@ public abstract class MovementSubject : SwitchableBehaviour
     public float Mass => mass;
     public abstract Vector3 Velocity { get; }
 
-    public void UpdateVelocity(MovementAgent agent)
-    { SetVelocity(agent.GetNextVelocity(this)); }
-    public void Move(float scale) => Move(Velocity * scale);
+    public void UpdateVelocity(MovementAgent agent, float deltaTime)
+    { SetVelocity(agent.GetNextVelocity(this, deltaTime)); }
+    public void Move(float deltaTime) => Move(Velocity * deltaTime);
 
 
     protected abstract void Move(Vector3 velocity);
