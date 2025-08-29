@@ -481,6 +481,7 @@ GameObject:
   m_Component:
   - component: {fileID: 627446367}
   - component: {fileID: 627446366}
+  - component: {fileID: 627446375}
   - component: {fileID: 627446370}
   - component: {fileID: 627446371}
   - component: {fileID: 627446369}
@@ -548,9 +549,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cb61d226796b9043be576922e881821, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumSpeed: 5
-  maximumAcceleration: 5
-  target: {fileID: 2101487814}
 --- !u!114 &627446369
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,7 +561,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb52d0e7e63d8a945865d8841d5776f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 1
 --- !u!114 &627446370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,7 +585,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 125a3d4158a6c614a850f595ce69985b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mass: 1
 --- !u!114 &627446372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,10 +597,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f270144b1e6df743a4811ea67186977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maximumSpeed: 5
-  maximumAcceleration: 5
-  arrivalRadius: 5
-  target: {fileID: 2101487814}
 --- !u!114 &627446373
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,8 +609,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec93fcac1c7c0a14ca6aa12e2944c2d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedMovement: 5
-  target: {fileID: 2101487814}
 --- !u!114 &627446374
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -633,6 +623,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedMovement: 5
   currentTarget: {fileID: 142577307}
+--- !u!114 &627446375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 627446362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04df2ce44f0b83448ac463d2a6f6f3ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  data: {fileID: 11400000, guid: 145bb5db34ce44c48840e625c2e4af8b, type: 2}
+  target: {fileID: 2101487814}
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0

@@ -3,29 +3,33 @@ using UnityEngine;
 
 public abstract class MovementController : MonoBehaviour
 {
-    private readonly ComponentSwitch<MovementSubject> subjects = new();
+    private readonly ComponentSwitch<MovementSystem> systems = new();
     private readonly ComponentSwitch<MovementAgent> agents = new();
 
     protected void Start()
     {
-        subjects.Initialize(gameObject);
+        systems.Initialize(gameObject);
         agents.Initialize(gameObject);
     }
 
     public MovementAgent Agent => agents.Active;
-    public MovementSubject Subject => subjects.Active;
+    public MovementSystem MovementSystem => systems.Active;
+
+    public delegate void Signal<T>(T param);
+    protected Signal<MovementAgent> RunOnAgentChanged;
+    protected Signal<MovementSystem> RunOnSystemChanged;
 }
 
 
 public class SwitchableBehaviour : MonoBehaviour
 {
-    public delegate void Signal(SwitchableBehaviour self);
+    public delegate void Signal<T>(T param);
 
-    public Signal RunOnEnable { get; set; }
+    public Signal<SwitchableBehaviour> RunOnEnable;
     protected void OnEnable()
     { RunOnEnable?.Invoke(this); }
 
-    public Signal RunOnDisable { get; set; }
+    public Signal<SwitchableBehaviour> RunOnDisable;
     protected void OnDisable()
     { RunOnDisable?.Invoke(this); }
 }
@@ -54,14 +58,17 @@ public class ComponentSwitch<T> where T : SwitchableBehaviour
             }
 
             component.RunOnEnable += OnComponentEnable;
-            component.RunOnDisable += OnActiveDisable;
+            component.RunOnDisable += OnComponentDisable;
         }
 
         active = initial;
+        RunOnActiveChanged?.Invoke(active);
     }
 
     public T Active => active;
 
+    public delegate void Signal<P>(P param);
+    public Signal<T> RunOnActiveChanged;
 
     public void Switch<Component>() where Component : T
     { Switch(Get<Component>()); }
@@ -82,10 +89,12 @@ public class ComponentSwitch<T> where T : SwitchableBehaviour
         { active.enabled = false; }
 
         active = component as T;
+        RunOnActiveChanged?.Invoke(active);
     }
-    private void OnActiveDisable(SwitchableBehaviour active)
+    private void OnComponentDisable(SwitchableBehaviour component)
     {
-        this.active = null;
+        active = null;
+        RunOnActiveChanged?.Invoke(null);
     }
 
 

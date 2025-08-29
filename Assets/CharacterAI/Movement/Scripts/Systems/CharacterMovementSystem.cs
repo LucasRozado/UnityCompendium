@@ -1,11 +1,16 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class CharacterMovementSubject : MovementSubject.Collider<ControllerColliderHit>
+public class CharacterMovementSystem : MovementSystem.RunOnUpdate
 {
+    public readonly CollisionSystem<ControllerColliderHit> collisions = new();
+
     private CharacterController characterController;
-    private void Awake()
-    { characterController = GetComponent<CharacterController>(); }
+    private new void Awake()
+    {
+        base.Awake();
+        characterController = GetComponent<CharacterController>();
+    }
 
 
     private Vector3 velocity;
@@ -28,28 +33,28 @@ public class CharacterMovementSubject : MovementSubject.Collider<ControllerColli
         { colliderHit = null; }
 
         bool hasUpdatedCollider = lastColliderHit?.collider != colliderHit?.collider;
-        if (onCollisionUpdate != null)
+        if (collisions.OnCollisionUpdate != null)
         {
             bool hasUpdatedFlags = lastCollisionFlags != collisionFlags;
             if (hasUpdatedCollider || hasUpdatedFlags)
-            { onCollisionUpdate.Invoke(collisionFlags, colliderHit); }
+            { collisions.OnCollisionUpdate.Invoke(collisionFlags, colliderHit); }
         }
-        if (onCollisionStay != null)
+        if (collisions.OnCollisionStay != null)
         {
             if (!hasUpdatedCollider)
-            { onCollisionStay.Invoke(collisionFlags, colliderHit); }
+            { collisions.OnCollisionStay.Invoke(collisionFlags, colliderHit); }
         }
-        if (onCollisionEnter != null)
+        if (collisions.OnCollisionEnter != null)
         {
             bool hasEnteredCollision = colliderHit != null && hasUpdatedCollider;
             if (hasEnteredCollision)
-            { onCollisionEnter.Invoke(collisionFlags, colliderHit); }
+            { collisions.OnCollisionEnter.Invoke(collisionFlags, colliderHit); }
         }
-        if (onCollisionLeave != null)
+        if (collisions.OnCollisionLeave != null)
         {
             bool hasLeftCollision = lastColliderHit != null && hasUpdatedCollider;
             if (hasLeftCollision)
-            { onCollisionLeave.Invoke(collisionFlags, colliderHit); }
+            { collisions.OnCollisionLeave.Invoke(collisionFlags, colliderHit); }
         }
     }
     private void OnControllerColliderHit(ControllerColliderHit colliderHit)
