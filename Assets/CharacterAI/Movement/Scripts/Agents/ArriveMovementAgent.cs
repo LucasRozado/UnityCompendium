@@ -1,24 +1,15 @@
 using UnityEngine;
 
-public class ArriveMovementAgent : MovementAgent
+public class ArriveMovementAgent : SteeringMovementAgent
 {
-    public override Vector3 GetNextVelocity(MovementSubject subject, Vector3 targetPosition, float deltaTime)
+    public override Vector3 CalculateVelocityTarget(MovementSubject subject, Vector3 positionTarget)
     {
-        Vector3 velocity = subject.Velocity;
+        Vector3 positionOffset = positionTarget - subject.Position;
+        float positionDistance = positionOffset.magnitude;
+        float speedRamped = subject.MaximumSpeed * (positionDistance / subject.ArrivalDistance);
+        float speedClamped = Mathf.Min(speedRamped, subject.MaximumSpeed);
+        Vector3 velocityTarget = (speedClamped / positionDistance) * positionOffset;
 
-        Vector3 targetOffset = targetPosition - subject.Position;
-        float targetDistance = targetOffset.magnitude;
-        float rampedSpeed = subject.MaximumSpeed * (targetDistance / subject.ArrivalDistance);
-        float clippedSpeed = Mathf.Min(rampedSpeed, subject.MaximumSpeed);
-        Vector3 desiredVelocity = (clippedSpeed / targetDistance) * targetOffset;
-
-        Vector3 steerVelocity = desiredVelocity - velocity;
-        steerVelocity = Vector3.ClampMagnitude(steerVelocity, subject.MaximumAcceleration * deltaTime);
-
-        Vector3 acceleration = steerVelocity / subject.Mass;
-        velocity += acceleration;
-        velocity = Vector3.ClampMagnitude(velocity, subject.MaximumSpeed);
-
-        return velocity;
+        return velocityTarget;
     }
 }

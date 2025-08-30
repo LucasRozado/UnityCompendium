@@ -40,7 +40,7 @@ public abstract class MovementSystem : SwitchableBehaviour
     }
     private void UpdateVelocity(MovementAgent agent, float deltaTime)
     {
-        Vector3 velocity = agent.GetNextVelocity(subject, subject.Target, deltaTime);
+        Vector3 velocity = agent.CalculateNextVelocity(subject, subject.Target, deltaTime);
         subject.SetVelocity(velocity);
         SetVelocity(velocity);
     }
