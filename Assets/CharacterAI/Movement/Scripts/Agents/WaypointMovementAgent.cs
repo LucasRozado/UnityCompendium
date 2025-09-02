@@ -2,15 +2,13 @@ using UnityEngine;
 
 public class WaypointMovementAgent : MovementAgent
 {
-    [SerializeField] private float speedMovement = 5f;
-
     [SerializeField] private Waypoint currentTarget;
 
     public override Vector3 CalculateNextVelocity(MovementSubject subject, Vector3 targetPosition, float deltaTime)
     {
         Vector3 offset = currentTarget.transform.position - subject.transform.position;
         Vector3 direction = offset.normalized;
-        Vector3 velocity = direction * speedMovement;
+        Vector3 velocity = direction * subject.MaximumSpeed;
 
         if (velocity.magnitude * deltaTime > offset.magnitude)
         {

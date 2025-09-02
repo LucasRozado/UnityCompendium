@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-public class CharacterMovementSystem : MovementSystem.RunOnUpdate
+public class CharacterMovementSystem : MovementSystem.RunsOnUpdate
 {
     public readonly CollisionSystem<ControllerColliderHit> collisions = new();
 
@@ -11,15 +11,6 @@ public class CharacterMovementSystem : MovementSystem.RunOnUpdate
         base.Awake();
         characterController = GetComponent<CharacterController>();
     }
-
-
-    private Vector3 velocity;
-
-
-    public override Vector3 Velocity => velocity;
-    protected override void SetVelocity(Vector3 velocity)
-    { this.velocity = velocity; }
-
 
     private ControllerColliderHit colliderHit;
     protected override void Move(Vector3 velocity)

@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MovementSubject))]
-public abstract class MovementSystem : SwitchableBehaviour
+public abstract class MovementSystem : SignalsEnable
 {
     private MovementSubject subject;
     private MovementController controller;
@@ -10,45 +11,35 @@ public abstract class MovementSystem : SwitchableBehaviour
         subject = GetComponent<MovementSubject>();
         controller = GetComponent<MovementController>();
     }
-    protected new void OnEnable()
-    {
-        base.OnEnable();
-        SetVelocity(subject.Velocity);
-    }
 
-    public MovementAgent Agent => controller.Agent;
-    public abstract Vector3 Velocity { get; }
+    public IReadOnlyCollection<MovementAgent> Agents => controller.MovementAgents;
 
-    protected abstract void SetVelocity(Vector3 velocity);
-    protected abstract void Move(Vector3 velocity);
-
-    public abstract class RunOnUpdate : MovementSystem
+    public abstract class RunsOnUpdate : MovementSystem
     {
         protected void Update()
-        { if (Agent != null) Move(Time.deltaTime); }
+        { if (Agents != null) Move(Time.deltaTime); }
     }
-    public abstract class RunOnFixedUpdate : MovementSystem
+    public abstract class RunsOnFixedUpdate : MovementSystem
     {
         protected void FixedUpdate()
-        { if (Agent != null) Move(Time.fixedDeltaTime); }
+        { if (Agents != null) Move(Time.fixedDeltaTime); }
     }
+
+    protected abstract void Move(Vector3 velocity);
 
     private void Move(float deltaTime)
     {
-        UpdateVelocity(Agent, deltaTime);
-        Move(Velocity * deltaTime);
+        UpdateVelocity(Agents, deltaTime);
+        Move(subject.Velocity * deltaTime);
     }
-    private void UpdateVelocity(MovementAgent agent, float deltaTime)
+    private void UpdateVelocity(IReadOnlyCollection<MovementAgent> agents, float deltaTime)
     {
-        Vector3 velocity = agent.CalculateNextVelocity(subject, subject.Target, deltaTime);
-        subject.SetVelocity(velocity);
-        SetVelocity(velocity);
-    }
-}
+        Vector3 velocity = Vector3.zero;
+        foreach (MovementAgent agent in agents)
+        { velocity += agent.CalculateNextVelocity(subject, subject.Target, deltaTime); }
 
-public interface IHoldsAgent
-{
-    MovementAgent Agent { get; }
+        subject.SetVelocity(velocity);
+    }
 }
 
 public class CollisionSystem<ColliderHit>
