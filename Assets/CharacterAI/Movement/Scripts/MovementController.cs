@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public abstract class MovementController : MonoBehaviour
+public class MovementController : MonoBehaviour
 {
     private MovementSubject subject;
     private readonly ComponentSwitch<MovementSystem> systems = new();

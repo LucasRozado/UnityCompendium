@@ -1,30 +1,62 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoidsSteeringAgent : SteeringMovementAgent
+public class BoidsSteeringAgent : MovementAgent
 {
+    [SerializeField] private float separationIntensity = 1f;
+    [SerializeField] private float cohesionIntensity = 1f;
+    [SerializeField] private float alignmentIntensity = 0.5f;
     [SerializeField] private LayerMask targetLayer;
 
-    public override Vector3 CalculateVelocityTarget(MovementSubject subject, Vector3 positionTarget)
+    HashSet<Collider> flock;
+
+    public override Vector3 CalculateNextForward(MovementSubject subject, Vector3 positionTarget, float deltaTime)
     {
+        Vector3 forwardTarget = CalculateAlignment(subject, flock) ;
+        Debug.DrawRay(subject.Position, forwardTarget, Color.blue);
+
+        Vector3 forward = Vector3.Slerp(subject.Velocity.normalized, forwardTarget, alignmentIntensity);
+        return forward;
+    }
+
+    public sealed override Vector3 CalculateNextVelocity(MovementSubject subject, Vector3 positionTarget, float deltaTime)
+    {
+        Vector3 positionOffset = positionTarget - subject.Position;
+        Vector3 directionTarget = positionOffset.normalized;
+        Vector3 velocityTarget = directionTarget * subject.MaximumSpeed;
+
+        Debug.DrawRay(subject.Position, velocityTarget, Color.gray);
+
         Collider[] overlaps = Physics.OverlapSphere(subject.Position, subject.SightDistance);
 
-        HashSet<Collider> others = new();
+        flock = new();
         foreach (Collider collider in overlaps)
         {
             bool isTargetLayer = IsLayerInMask(collider.gameObject.layer, targetLayer);
             bool isSelf = collider.gameObject == subject.gameObject;
 
             if (isTargetLayer && !isSelf)
-            { others.Add(collider); }
+            { flock.Add(collider); }
         }
 
-        Vector3 velocityTarget = Vector3.zero;
-        velocityTarget += CalculateSeparation(subject, others);
-        velocityTarget += CalculateAlignment(subject, others);
-        velocityTarget += CalculateCohesion(subject, others);
+        velocityTarget += CalculateSeparation(subject, flock) * separationIntensity;
+        velocityTarget += CalculateCohesion(subject, flock) * cohesionIntensity;
 
-        return velocityTarget;
+        //Debug.DrawRay(subject.Position, velocityTarget, Color.blue);
+
+        Vector3 velocity = subject.Velocity;
+
+        Vector3 steeringTarget = velocityTarget - velocity;
+        Vector3 steering = Vector3.ClampMagnitude(steeringTarget, subject.MaximumAcceleration * deltaTime);
+
+        Vector3 acceleration = steering / subject.Mass;
+
+        velocity += acceleration;
+        velocity = Vector3.ClampMagnitude(velocity, subject.MaximumSpeed);
+
+        //Debug.DrawRay(subject.Position, velocity, Color.yellow);
+
+        return velocity;
     }
 
     private Vector3 CalculateSeparation(MovementSubject subject, ICollection<Collider> others)
@@ -32,15 +64,24 @@ public class BoidsSteeringAgent : SteeringMovementAgent
         Vector3 positionsSum = Vector3.zero;
         foreach (Collider other in others)
         {
-            positionsSum += other.transform.position;
+            Vector3 offset = subject.Position - other.transform.position;
+
+            float distance = offset.magnitude;
+
+            float strength = Mathf.Lerp(1, 0, distance / subject.SightDistance);
+
+            Debug.DrawRay(subject.Position, strength * offset.normalized, Color.yellow);
+
+            positionsSum += strength * offset.normalized;
             // TODO: avoidance variable, exponential curve when too close
             // avoidance distance, avoidance strength
         }
 
-        Vector3 velocityTarget = positionsSum - subject.Position;
+
+        Vector3 velocityTarget = positionsSum;
+        Debug.DrawRay(subject.Position, velocityTarget, Color.red);
         return velocityTarget;
     }
-
     private Vector3 CalculateCohesion(MovementSubject subject, ICollection<Collider> others)
     {
         Vector3 positionsSum = Vector3.zero;
@@ -50,7 +91,8 @@ public class BoidsSteeringAgent : SteeringMovementAgent
         }
         Vector3 positionsAverage = positionsSum / others.Count;
 
-        Vector3 velocityTarget = positionsAverage;
+        Vector3 velocityTarget = positionsAverage - subject.Position;
+        Debug.DrawRay(subject.Position, velocityTarget, Color.green);
         return velocityTarget;
     }
     private Vector3 CalculateAlignment(MovementSubject subject, ICollection<Collider> others)
@@ -62,8 +104,8 @@ public class BoidsSteeringAgent : SteeringMovementAgent
         }
         Vector3 forwardsAverage = forwardsSum / others.Count;
 
-        Vector3 velocityTarget = forwardsAverage;
-        return velocityTarget;
+        Vector3 forwardTarget = forwardsAverage;
+        return forwardTarget;
     }
 
     private bool IsLayerInMask(int layer, LayerMask mask)

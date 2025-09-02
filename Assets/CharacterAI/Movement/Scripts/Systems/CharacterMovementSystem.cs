@@ -12,6 +12,17 @@ public class CharacterMovementSystem : MovementSystem.RunsOnUpdate
         characterController = GetComponent<CharacterController>();
     }
 
+    protected new void OnEnable()
+    {
+        base.OnEnable();
+        characterController.enabled = true;
+    }
+    protected new void OnDisable()
+    {
+        base.OnDisable();
+        characterController.enabled = false;
+    }
+
     private ControllerColliderHit colliderHit;
     protected override void Move(Vector3 velocity)
     {

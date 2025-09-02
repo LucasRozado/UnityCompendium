@@ -9,5 +9,4 @@ public class MovementSubjectData : ScriptableObject
     public float maximumAcceleration = 5f;
     
     public float sightDistance = 5f;
-    public float sightAngle = 120f;
 }
