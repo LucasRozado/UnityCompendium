@@ -11,7 +11,8 @@ public class MovementSubject : MonoBehaviour
     public float Mass => data.mass;
     public float MaximumSpeed  => data.maximumSpeed;
     public float MaximumAcceleration  => data.maximumAcceleration;
-    public float ArrivalDistance => data.arrivalRadius;
+    public float SightDistance => data.sightDistance;
+    public float SightAngle => data.sightAngle;
 
     public Vector3 Velocity => velocity;
     public Vector3 Position => transform.position;

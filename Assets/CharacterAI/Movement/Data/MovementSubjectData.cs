@@ -4,7 +4,10 @@ using UnityEngine;
 public class MovementSubjectData : ScriptableObject
 {
     public float mass = 1f;
+
     public float maximumSpeed = 5f;
     public float maximumAcceleration = 5f;
-    public float arrivalRadius = 5f;
+    
+    public float sightDistance = 5f;
+    public float sightAngle = 120f;
 }

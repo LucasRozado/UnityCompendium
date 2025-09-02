@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SeekMovementAgent : SteeringMovementAgent
+public class SeekSteeringAgent : SteeringMovementAgent
 {
     public override Vector3 CalculateVelocityTarget(MovementSubject subject, Vector3 positionTarget)
     {
