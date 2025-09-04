@@ -29,24 +29,15 @@ public abstract class MovementSystem : SignalsEnable
     private void Move(float deltaTime)
     {
         UpdateVelocity(Agents, deltaTime);
-        UpdateRotation(Agents, deltaTime);
         Move(Subject.Velocity * deltaTime);
     }
     private void UpdateVelocity(IReadOnlyCollection<MovementAgent> agents, float deltaTime)
     {
         Vector3 velocity = Vector3.zero;
         foreach (MovementAgent agent in agents)
-        { velocity += agent.CalculateNextVelocity(Subject, Subject.Target, deltaTime); }
+        { velocity += agent.CalculateNextVelocity(Subject, deltaTime); }
 
         Subject.SetVelocity(velocity);
-    }
-    private void UpdateRotation(IReadOnlyCollection<MovementAgent> agents, float deltaTime)
-    {
-        Vector3 forward = Vector3.zero;
-        foreach (MovementAgent agent in agents)
-        { forward += agent.CalculateNextForward(Subject, Subject.Target, deltaTime); }
-
-        Subject.SetForward(forward);
     }
 }
 

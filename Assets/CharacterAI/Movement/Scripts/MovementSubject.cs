@@ -16,12 +16,12 @@ public class MovementSubject : MonoBehaviour
     public Vector3 Velocity => velocity;
     public Vector3 Forward => transform.forward;
     public Vector3 Position => transform.position;
-    public Vector3 Target => target.position;
+    public Transform Target => target;
 
     public void SetVelocity(Vector3 velocity)
     { this.velocity = velocity; }
     public void SetForward(Vector3 forward)
-    { transform.forward = forward; }
+    { transform.rotation = Quaternion.LookRotation(forward); }
     public void SetTarget(Transform target)
     { this.target = target; }
 }

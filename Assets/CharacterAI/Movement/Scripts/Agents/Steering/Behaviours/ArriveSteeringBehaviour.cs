@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class ArriveSteeringAgent : SteeringMovementAgent
+public class ArriveSteeringBehaviour : SteeringBehaviour
 {
-    public override Vector3 CalculateVelocityTarget(MovementSubject subject, Vector3 positionTarget)
+    public override Vector3 CalculateVelocityTarget(MovementSubject subject)
     {
-        Vector3 positionOffset = positionTarget - subject.Position;
+        Vector3 positionOffset = subject.Target.position - subject.Position;
         float positionDistance = positionOffset.magnitude;
         float speedRamped = subject.MaximumSpeed * (positionDistance / subject.SightDistance);
         float speedClamped = Mathf.Min(speedRamped, subject.MaximumSpeed);

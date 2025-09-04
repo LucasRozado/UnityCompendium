@@ -4,7 +4,7 @@ public class WaypointMovementAgent : MovementAgent
 {
     [SerializeField] private Waypoint currentTarget;
 
-    public override Vector3 CalculateNextVelocity(MovementSubject subject, Vector3 targetPosition, float deltaTime)
+    public override Vector3 CalculateNextVelocity(MovementSubject subject, float deltaTime)
     {
         Vector3 offset = currentTarget.transform.position - subject.transform.position;
         Vector3 direction = offset.normalized;

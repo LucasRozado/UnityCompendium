@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BoidsSteeringAgent : MovementAgent
+public class BoidsSteeringBehaviour : SteeringBehaviour
 {
     [SerializeField] private float separationIntensity = 1f;
     [SerializeField] private float cohesionIntensity = 1f;
@@ -10,18 +10,9 @@ public class BoidsSteeringAgent : MovementAgent
 
     HashSet<Collider> flock;
 
-    public override Vector3 CalculateNextForward(MovementSubject subject, Vector3 positionTarget, float deltaTime)
+    public override Vector3 CalculateVelocityTarget(MovementSubject subject)
     {
-        Vector3 forwardTarget = CalculateAlignment(subject, flock) ;
-        Debug.DrawRay(subject.Position, forwardTarget, Color.blue);
-
-        Vector3 forward = Vector3.Slerp(subject.Velocity.normalized, forwardTarget, alignmentIntensity);
-        return forward;
-    }
-
-    public sealed override Vector3 CalculateNextVelocity(MovementSubject subject, Vector3 positionTarget, float deltaTime)
-    {
-        Vector3 positionOffset = positionTarget - subject.Position;
+        Vector3 positionOffset = subject.Target.position - subject.Position;
         Vector3 directionTarget = positionOffset.normalized;
         Vector3 velocityTarget = directionTarget * subject.MaximumSpeed;
 
@@ -41,22 +32,9 @@ public class BoidsSteeringAgent : MovementAgent
 
         velocityTarget += CalculateSeparation(subject, flock) * separationIntensity;
         velocityTarget += CalculateCohesion(subject, flock) * cohesionIntensity;
+        CalculateAlignment(subject, flock);
 
-        //Debug.DrawRay(subject.Position, velocityTarget, Color.blue);
-
-        Vector3 velocity = subject.Velocity;
-
-        Vector3 steeringTarget = velocityTarget - velocity;
-        Vector3 steering = Vector3.ClampMagnitude(steeringTarget, subject.MaximumAcceleration * deltaTime);
-
-        Vector3 acceleration = steering / subject.Mass;
-
-        velocity += acceleration;
-        velocity = Vector3.ClampMagnitude(velocity, subject.MaximumSpeed);
-
-        //Debug.DrawRay(subject.Position, velocity, Color.yellow);
-
-        return velocity;
+        return velocityTarget;
     }
 
     private Vector3 CalculateSeparation(MovementSubject subject, ICollection<Collider> others)
